@@ -2,7 +2,7 @@
 	"name": "directus-extension-reply-to-mail",
 	"description": "Please enter a description for your extension",
 	"icon": "extension",
-	"version": "1.0.0",
+	"version": "1.0.1",
 	"keywords": [
 		"directus",
 		"directus-extension",
