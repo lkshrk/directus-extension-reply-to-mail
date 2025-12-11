@@ -36,8 +36,8 @@
     "build": "directus-extension build",
     "dev": "directus-extension build -w --no-minify",
     "link": "directus-extension link",
-    "prepare": "npm run build",
-    "release": "npm version patch && git push --follow-tags",
+    "prepare": "pnpm run build",
+    "release": "pnpm version patch && git push --follow-tags",
     "test": "jest --config jest.config.cjs",
     "test:watch": "jest --config jest.config.cjs --watch",
     "test:coverage": "jest --config jest.config.cjs --coverage"
