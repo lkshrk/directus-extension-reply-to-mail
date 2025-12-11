@@ -90,7 +90,7 @@ jobs:
       - name: Install pnpm
         uses: pnpm/action-setup@v4
         with:
-          version: 9
+          version: 10
 
       - name: Verify release conditions
         if: steps.check-status.outputs.can_release == 'true'
