@@ -92,7 +92,21 @@ jobs:
         with:
           version: 9
 
+      - name: Verify release conditions
+        if: steps.check-status.outputs.can_release == 'true'
+        run: |
+          echo "Release verification:"
+          echo "- Open PRs: $OPEN_RENOVATE_PR_COUNT"
+          echo "- Failed PRs: $FAILED_RENOVATE_PR_COUNT"
+          echo "- Total PRs: $RENOVATE_PR_COUNT"
+          echo "Proceeding with release..."
+
+      - name: Pre-release build verification
+        if: steps.check-status.outputs.can_release == 'true'
+        run: pnpm run build
+
       - name: Create minor version release
+        if: steps.check-status.outputs.can_release == 'true'
         run: |
           # Get current version
           CURRENT_VERSION=$(node -p "require('./package.json').version")

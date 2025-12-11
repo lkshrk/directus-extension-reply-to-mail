@@ -26,8 +26,16 @@ jobs:
           node-version: "20"
           cache: "pnpm"
 
+      - name: Cache pnpm store
+        uses: actions/cache@v3
+        with:
+          path: ~/.pnpm-store
+          key: ${{ runner.os }}-pnpm-store-${{ hashFiles('**/pnpm-lock.yaml') }}
+          restore-keys: |
+            ${{ runner.os }}-pnpm-store-
+
       - name: Install dependencies
-        run: pnpm install --frozen-lockfile
+        run: pnpm install --frozen-lockfile --verify-store-integrity
 
       - name: Validate extension structure
         run: ./scripts/validate.sh

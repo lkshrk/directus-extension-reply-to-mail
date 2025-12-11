@@ -44,6 +44,21 @@ jobs:
       - name: Build extension
         run: pnpm run build
 
+      - name: Generate changelog
+        run: |
+          git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s (%an)" > CHANGELOG_TEMP.md
+          echo "## Changelog" >> CHANGELOG.md
+          cat CHANGELOG_TEMP.md >> CHANGELOG.md
+          rm CHANGELOG_TEMP.md
+
+      - name: Verify release artifacts
+        run: |
+          if [ ! -f "dist/api.js" ] || [ ! -f "dist/app.js" ]; then
+            echo "❌ Release artifacts missing!"
+            exit 1
+          fi
+          echo "✅ All release artifacts present"
+
       - name: Verify build output
         run: |
           if [ ! -d "dist" ]; then
