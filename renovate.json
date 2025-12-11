@@ -1,0 +1,21 @@
+{
+  "extends": ["config:recommended"],
+  "enabled": true,
+  "schedule": ["every weekend"],
+  "automerge": true,
+  "automergeType": "pr",
+  "rebaseWhen": "auto",
+  "requiredStatusChecks": ["validate-and-test"],
+  "packageRules": [
+    {
+      "matchUpdateTypes": ["patch", "minor"],
+      "automerge": true
+    },
+    {
+      "matchUpdateTypes": ["major"],
+      "automerge": false
+    }
+  ],
+  "prConcurrentLimit": 10,
+  "prHourlyLimit": 20
+}
