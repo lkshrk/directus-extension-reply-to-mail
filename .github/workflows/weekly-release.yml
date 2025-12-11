@@ -1,0 +1,134 @@
+name: Weekly Release
+
+on:
+  schedule:
+    - cron: "0 12 * * 1" # Every Monday at 12:00 PM UTC
+  workflow_dispatch:
+
+permissions:
+  contents: write
+  pull-requests: read
+
+jobs:
+  check-renovate-status:
+    name: Check Renovate PR Status
+    runs-on: ubuntu-latest
+    outputs:
+      can_release: ${{ steps.check-status.outputs.can_release }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Check Renovate PR status
+        id: check-status
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          # Get date range (last 7 days)
+          START_DATE=$(date -d "7 days ago" +%Y-%m-%d)
+          END_DATE=$(date +%Y-%m-%d)
+
+          echo "Checking Renovate PRs from $START_DATE to $END_DATE"
+
+          # Get all Renovate PRs created in the last 7 days
+          RENOVATE_PR_COUNT=$(gh api \
+            "repos/${{ github.repository }}/pulls?state=all&sort=created&direction=desc" \
+            --jq ".[] | select(.user.login == \"renovate\") | select(.created_at >= \"$START_DATE\" and .created_at <= \"$END_DATE\") | length" \
+            2>/dev/null || echo "0")
+
+          echo "Found $RENOVATE_PR_COUNT Renovate PRs created in the last 7 days"
+
+          # Check for any open Renovate PRs
+          OPEN_RENOVATE_PR_COUNT=$(gh api \
+            "repos/${{ github.repository }}/pulls?state=open&sort=created&direction=desc" \
+            --jq ".[] | select(.user.login == \"renovate\") | length" \
+            2>/dev/null || echo "0")
+
+          echo "Found $OPEN_RENOVATE_PR_COUNT open Renovate PRs"
+
+          # Check for any failed Renovate PRs
+          FAILED_RENOVATE_PR_COUNT=$(gh api \
+            "repos/${{ github.repository }}/pulls?state=closed&sort=updated&direction=desc" \
+            --jq ".[] | select(.user.login == \"renovate\") | select(.merged == false) | select(.created_at >= \"$START_DATE\" and .created_at <= \"$END_DATE\") | length" \
+            2>/dev/null || echo "0")
+
+          echo "Found $FAILED_RENOVATE_PR_COUNT failed/closed Renovate PRs"
+
+          # Can release if:
+          # 1. No open Renovate PRs (all must be merged)
+          # 2. At least one Renovate PR was created in the last 7 days
+          # Note: Failed PRs don't block release - we still release with merged updates
+          if [ "$OPEN_RENOVATE_PR_COUNT" -eq 0 ] && [ "$RENOVATE_PR_COUNT" -gt 0 ]; then
+            echo "✅ All Renovate PRs are merged - creating release"
+            if [ "$FAILED_RENOVATE_PR_COUNT" -gt 0 ]; then
+              echo "ℹ️  Note: $FAILED_RENOVATE_PR_COUNT Renovate PRs failed but we're releasing anyway"
+            fi
+            echo "can_release=true" >> $GITHUB_OUTPUT
+          else
+            echo "❌ Cannot release - open Renovate PRs exist"
+            echo "Open PRs: $OPEN_RENOVATE_PR_COUNT"
+            echo "can_release=false" >> $GITHUB_OUTPUT
+          fi
+
+  create-release:
+    name: Create Release
+    runs-on: ubuntu-latest
+    needs: check-renovate-status
+    if: needs.check-renovate-status.outputs.can_release == 'true'
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "pnpm"
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: Create minor version release
+        run: |
+          # Get current version
+          CURRENT_VERSION=$(node -p "require('./package.json').version")
+
+          # Bump to next minor version
+          IFS='.' read -ra PARTS <<< "$CURRENT_VERSION"
+          NEXT_VERSION="${PARTS[0]}.$((PARTS[1] + 1)).0"
+
+          echo "Creating release: $CURRENT_VERSION → $NEXT_VERSION"
+
+          # Update version
+          npm version $NEXT_VERSION --no-git-tag-version
+
+          # Create tag
+          git config user.name "github-actions"
+          git config user.email "github-actions@github.com"
+          git add package.json
+          git commit -m "chore: bump version to v$NEXT_VERSION"
+          git tag v$NEXT_VERSION
+          git push origin v$NEXT_VERSION
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: "Weekly Release v${{ steps.create-release.outputs.next_version }}"
+          tag_name: "v${{ steps.create-release.outputs.next_version }}"
+          body: "Automated weekly release with all merged Renovate updates"
+          generate_release_notes: true
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  no-release:
+    name: No Release
+    runs-on: ubuntu-latest
+    needs: check-renovate-status
+    if: needs.check-renovate-status.outputs.can_release == 'false'
+    steps:
+      - name: Log reason
+        run: echo "Skipping release - Renovate PRs still open or builds failed"
