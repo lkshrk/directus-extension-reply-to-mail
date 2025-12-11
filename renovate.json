@@ -12,6 +12,6 @@
       "requiredStatusChecks": ["validate-and-test"]
     }
   ],
-  "prConcurrentLimit": 10,
+  "prConcurrentLimit": 2,
   "prHourlyLimit": 20
 }
