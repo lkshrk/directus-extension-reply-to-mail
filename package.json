@@ -43,7 +43,7 @@
     "test:coverage": "jest --config jest.config.cjs --coverage"
   },
   "dependencies": {
-    "marked": "14.1.2",
+    "marked": "14.1.4",
     "sanitize-html": "2.13.1"
   },
   "devDependencies": {
