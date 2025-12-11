@@ -1,0 +1,63 @@
+name: Test and Build
+
+on:
+  push:
+    branches: ["**"] # Run on all branches
+  pull_request:
+    branches: ["**"] # Run on all pull requests
+
+jobs:
+  validate-and-test:
+    name: Validate, Build and Test
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: "npm"
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Validate extension structure
+        run: ./scripts/validate.sh
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
+      - name: Build extension
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Build failed: dist directory not created"
+            exit 1
+          fi
+          if [ ! -f "dist/api.js" ] || [ ! -f "dist/app.js" ]; then
+            echo "Build failed: required files not found in dist"
+            exit 1
+          fi
+          echo "Build successful: all required files present"
+
+      - name: Upload coverage report
+        if: success() || failure()
+        uses: actions/upload-artifact@v4
+        with:
+          name: coverage-report
+          path: coverage
+
+      - name: Upload build artifacts
+        if: success()
+        uses: actions/upload-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist

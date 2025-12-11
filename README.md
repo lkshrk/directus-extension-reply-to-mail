@@ -41,6 +41,37 @@ The repository includes a GitHub Actions workflow (`.github/workflows/release.ym
 
 The workflow will automatically publish to npm when you push a version tag (e.g., `v1.0.0`).
 
+## Testing & CI/CD
+
+The extension includes comprehensive automated tests using Jest and a GitHub Actions workflow that runs on every push and pull request.
+
+### Quick Start
+
+```bash
+# Run all tests
+npm test
+
+# Run tests with coverage
+npm run test:coverage
+
+# Run tests in watch mode
+npm run test:watch
+```
+
+### Local Validation
+
+You can run the same validation locally:
+
+```bash
+# Validate extension structure
+./scripts/validate.sh
+
+# Run the full CI pipeline locally
+npm ci && ./scripts/validate.sh && npm test && npm run build
+```
+
+=======
+
 ## Credits
 
 Part of the source code is borrowed from [Directus](https://github.com/directus/directus).

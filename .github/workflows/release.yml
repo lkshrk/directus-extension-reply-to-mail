@@ -21,16 +21,43 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: "20"
-          registry-url: "https://registry.npmjs.org/"
-
-      - name: Update npm
-        run: npm install -g npm@latest
+          cache: "npm"
 
       - name: Install dependencies
         run: npm ci
 
+      - name: Validate extension structure
+        run: ./scripts/validate.sh
+
+      - name: Run tests
+        run: npm test
+
+      - name: Run tests with coverage
+        run: npm run test:coverage
+
       - name: Build extension
-        run: npm run build --if-present
+        run: npm run build
+
+      - name: Verify build output
+        run: |
+          if [ ! -d "dist" ]; then
+            echo "Build failed: dist directory not created"
+            exit 1
+          fi
+          if [ ! -f "dist/api.js" ] || [ ! -f "dist/app.js" ]; then
+            echo "Build failed: required files not found in dist"
+            exit 1
+          fi
+          echo "Build successful: all required files present"
+
+      - name: Set up Node.js for publishing
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          registry-url: "https://registry.npmjs.org/"
+
+      - name: Update npm
+        run: npm install -g npm@latest
 
       - name: Get version from tag
         id: get_version
