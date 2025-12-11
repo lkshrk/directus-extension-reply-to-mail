@@ -1,18 +1,26 @@
 {
-  "extends": ["config:recommended"],
+  "extends": [
+    "config:recommended"
+  ],
   "enabled": true,
-  "schedule": ["every weekend"],
+  "schedule": [
+    "every weekend"
+  ],
   "automerge": true,
   "automergeType": "pr",
   "rebaseWhen": "auto",
-  "requiredStatusChecks": ["validate-and-test"],
   "packageRules": [
     {
-      "matchUpdateTypes": ["patch", "minor"],
+      "matchUpdateTypes": [
+        "patch",
+        "minor"
+      ],
       "automerge": true
     },
     {
-      "matchUpdateTypes": ["major"],
+      "matchUpdateTypes": [
+        "major"
+      ],
       "automerge": false
     }
   ],
