@@ -3,11 +3,12 @@ name: Release
 on:
   push:
     tags:
-      - "v*.*.*"
+      - "v[0-9]+.[0-9]+.[0-9]+"
 
 permissions:
   id-token: write # Required for OIDC
-  contents: read
+  contents: write # Required for creating releases
+  packages: write # Required for publishing to npm
 
 jobs:
   release:
