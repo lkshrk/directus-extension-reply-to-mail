@@ -9,8 +9,8 @@ importers:
   .:
     dependencies:
       marked:
-        specifier: 14.1.4
-        version: 14.1.4
+        specifier: 17.0.1
+        version: 17.0.1
       sanitize-html:
         specifier: 2.17.0
         version: 2.17.0
@@ -2634,9 +2634,9 @@ packages:
   makeerror@1.0.12:
     resolution: {integrity: sha512-JmqCvUhmt43madlpFzG4BQzG2Z3m6tvQDNKdClZnO3VbIudJYmxsT0FNJMeiB2+JTSlTQTSbU8QdesVmwJcmLg==}
 
-  marked@14.1.4:
-    resolution: {integrity: sha512-vkVZ8ONmUdPnjCKc5uTRvmkRbx4EAi2OkTOXmfTDhZz3OFqMNBM1oTTWwTr4HY4uAEojhzPf+Fy8F1DWa3Sndg==}
-    engines: {node: '>= 18'}
+  marked@17.0.1:
+    resolution: {integrity: sha512-boeBdiS0ghpWcSwoNm/jJBwdpFaMnZWRzjA6SkUMYb40SVaN1x7mmfGKp0jvexGcx+7y2La5zRZsYFZI6Qpypg==}
+    engines: {node: '>= 20'}
     hasBin: true
 
   math-intrinsics@1.1.0:
@@ -6752,7 +6752,7 @@ snapshots:
     dependencies:
       tmpl: 1.0.5
 
-  marked@14.1.4: {}
+  marked@17.0.1: {}
 
   math-intrinsics@1.1.0: {}
 
