@@ -3,6 +3,8 @@ name: Test and Build
 on:
   push:
     branches: ["**"] # Run on all branches
+    tags:
+      - "v[0-9]+.[0-9]+.[0-9]+" # Run on tag pushes (semantic version tags)
   pull_request:
     branches: ["**"] # Run on all pull requests
 

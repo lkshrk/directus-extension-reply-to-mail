@@ -1,9 +1,11 @@
 name: Release
 
 on:
-  push:
-    tags:
-      - "v[0-9]+.[0-9]+.[0-9]+"
+  workflow_run:
+    workflows:
+      - "Test and Build"
+    types:
+      - completed
 
 permissions:
   id-token: write # Required for OIDC
@@ -12,87 +14,99 @@ permissions:
 
 jobs:
   release:
-    name: Create Release
+    name: Create Release (after successful Test and Build)
     runs-on: ubuntu-latest
-    steps:
-      - name: Checkout code
-        uses: actions/checkout@v6
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
 
-      - name: Install pnpm
+    steps:
+      - name: Checkout commit from Test and Build run
+        uses: actions/checkout@v6
+        with:
+          # Checkout the exact commit that the Test and Build workflow ran on
+          ref: ${{ github.event.workflow_run.head_commit.id }}
+          fetch-depth: 0
+
+      - name: Determine tag that points at the commit
+        id: get_tag
+        run: |
+          set -euo pipefail
+          HEAD_SHA="${{ github.event.workflow_run.head_commit.id }}"
+          echo "Looking for tags that point at commit $HEAD_SHA"
+          # Ensure tags are available locally
+          git fetch --tags --force
+          # Find the first semantic version tag (vX.Y.Z) that points at the commit
+          TAG=$(git tag --points-at "$HEAD_SHA" -l "v[0-9]*.[0-9]*.[0-9]*" | head -n1 || true)
+          if [ -z "$TAG" ]; then
+            echo "No semantic tag (vX.Y.Z) points at commit $HEAD_SHA. Skipping release."
+            # Export empty outputs (so subsequent steps can check)
+            echo "TAG=" >> $GITHUB_OUTPUT
+            echo "VERSION=" >> $GITHUB_OUTPUT
+            exit 0
+          fi
+          echo "Found tag: $TAG"
+          echo "TAG=$TAG" >> $GITHUB_OUTPUT
+          # Strip leading `v` for VERSION
+          echo "VERSION=${TAG#v}" >> $GITHUB_OUTPUT
+
+      - name: Install pnpm (needed if we need to build/publish)
+        if: ${{ steps.get_tag.outputs.TAG != '' }}
         uses: pnpm/action-setup@v4
         with:
           version: 10
 
       - name: Set up Node.js
+        if: ${{ steps.get_tag.outputs.TAG != '' }}
         uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "pnpm"
 
-      - name: Install dependencies
-        run: pnpm install --frozen-lockfile
-
-      - name: Validate extension structure
-        run: ./scripts/validate.sh
-
-      - name: Run tests
-        run: npm test
-
-      - name: Run tests with coverage
-        run: npm run test:coverage
-
-      - name: Build extension
-        run: pnpm run build
-
-      - name: Generate changelog
-        run: |
-          git log $(git describe --tags --abbrev=0)..HEAD --pretty=format:"- %s (%an)" > CHANGELOG_TEMP.md
-          echo "## Changelog" >> CHANGELOG.md
-          cat CHANGELOG_TEMP.md >> CHANGELOG.md
-          rm CHANGELOG_TEMP.md
-
-      - name: Verify release artifacts
-        run: |
-          if [ ! -f "dist/api.js" ] || [ ! -f "dist/app.js" ]; then
-            echo "❌ Release artifacts missing!"
-            exit 1
-          fi
-          echo "✅ All release artifacts present"
+      - name: Download build artifacts from Test and Build
+        if: ${{ steps.get_tag.outputs.TAG != '' }}
+        uses: actions/download-artifact@v4
+        with:
+          name: build-artifacts
+          path: dist
 
       - name: Verify build output
+        if: ${{ steps.get_tag.outputs.TAG != '' }}
         run: |
           if [ ! -d "dist" ]; then
-            echo "Build failed: dist directory not created"
+            echo "Build failed: dist directory not found in downloaded artifacts"
             exit 1
           fi
           if [ ! -f "dist/api.js" ] || [ ! -f "dist/app.js" ]; then
             echo "Build failed: required files not found in dist"
             exit 1
           fi
-          echo "Build successful: all required files present"
-
-      - name: Set up Node.js for publishing
-        uses: actions/setup-node@v6
-        with:
-          node-version: "24"
-          registry-url: "https://registry.npmjs.org/"
-
-      - name: Update npm
-        run: npm install -g npm@latest
+          echo "Build artifacts verified"
 
       - name: Get version from tag
+        if: ${{ steps.get_tag.outputs.TAG != '' }}
         id: get_version
-        run: echo "VERSION=${GITHUB_REF#refs/tags/v}" >> $GITHUB_OUTPUT
+        run: |
+          echo "VERSION=${{ steps.get_tag.outputs.VERSION }}" >> $GITHUB_OUTPUT
 
       - name: Create GitHub Release
+        if: ${{ steps.get_tag.outputs.TAG != '' }}
         uses: softprops/action-gh-release@v2
         with:
-          name: Release v${{ steps.get_version.outputs.VERSION }}
-          tag_name: v${{ steps.get_version.outputs.VERSION }}
-          body: "Release notes for version ${{ steps.get_version.outputs.VERSION }}"
+          name: Release ${{ steps.get_tag.outputs.TAG }}
+          tag_name: ${{ steps.get_tag.outputs.TAG }}
+          body: "Release notes for version ${{ steps.get_tag.outputs.VERSION }}"
           files: dist/**
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish to npm
-        run: npm publish
+        if: ${{ steps.get_tag.outputs.TAG != '' }}
+        run: |
+          # Ensure npm auth is present (NPM_TOKEN should be configured in repository secrets)
+          if [ -z "${NPM_TOKEN:-}" ]; then
+            echo "NPM_TOKEN secret not set; skipping npm publish"
+            exit 1
+          fi
+          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
+          npm publish
+        env:
+          NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
