@@ -1,12 +1,22 @@
 {
   "name": "directus-extension-reply-to-mail",
-  "description": "Custom operation to send emails. It uses the Directus Nodemailer service and provides a replyTo option.",
-  "icon": "extension",
+  "description": "Custom operation to send emails with reply-to field set. It uses the Directus Nodemailer service and extends it with a replyTo option.",
+  "icon": "reply",
+  "author": {
+    "email": "dev@harke.me",
+    "name": "lkshrk"
+  },
+  "license": "MIT",
   "version": "1.0.4",
   "keywords": [
     "directus",
     "directus-extension",
-    "directus-extension-operation"
+    "directus-extension-mail",
+    "directus-extension-operation",
+    "directus-extension-reply-to-mail",
+    "directus-operation",
+    "directus-mail",
+    "directus-reply-to-mail"
   ],
   "homepage": "https://github.com/lkshrk/directus-extension-reply-to-mail#readme",
   "repository": {
@@ -30,7 +40,7 @@
       "app": "src/app.ts",
       "api": "src/api.ts"
     },
-    "host": "^10.10.0"
+    "host": "^11.10.0"
   },
   "scripts": {
     "build": "directus-extension build",

@@ -1,6 +1,6 @@
 # directus extension: replyTo mail
 
-Custom operation to send emails. It uses the Directus Nodemailer service and provides a replyTo option.
+Custom operation to send emails with reply-to field set. It uses the Directus Nodemailer service and extends it with a replyTo option.
 
 ## Usage
 
