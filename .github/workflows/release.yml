@@ -63,7 +63,7 @@ jobs:
 
       - name: Download build artifacts from Test and Build
         if: ${{ steps.get_tag.outputs.TAG != '' }}
-        uses: actions/download-artifact@v4
+        uses: actions/download-artifact@v7
         with:
           name: build-artifacts
           path: dist
