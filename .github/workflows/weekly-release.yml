@@ -94,9 +94,8 @@ jobs:
           restore-keys: |
             ${{ runner.os }}-pnpm-store-
 
-      - name: Verify build environment
-        run: |
-          echo "Build environment ready. Proceeding with release..."
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile --verify-store-integrity
 
       - name: Pre-release build verification
         run: pnpm run build
