@@ -64,5 +64,12 @@
     "ts-jest": "^29.1.5",
     "typescript": "^5.9.3",
     "vue": "^3.5.25"
+  },
+  "pnpm": {
+    "onlyBuiltDependencies": [
+      "esbuild",
+      "unrs-resolver",
+      "vue-demi"
+    ]
   }
 }
