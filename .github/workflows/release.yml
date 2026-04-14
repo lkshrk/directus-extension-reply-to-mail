@@ -1,133 +1,53 @@
 name: Release
 
 on:
-  workflow_run:
-    workflows:
-      - "Test and Build"
-    types:
-      - completed
+  schedule:
+    - cron: "0 12 * * 1" # Every Monday at 12:00 UTC
+  workflow_dispatch:
+
+concurrency:
+  group: release
+  cancel-in-progress: false
 
 permissions:
-  id-token: write # Required for OIDC
-  contents: write # Required for creating releases
-  packages: write # Required for publishing to npm
+  contents: write
+  issues: write
+  pull-requests: write
+  id-token: write
 
 jobs:
   release:
-    name: Create Release (after successful Test and Build)
+    name: Release
     runs-on: ubuntu-latest
-    if: ${{ github.event.workflow_run.conclusion == 'success' }}
-
     steps:
-      - name: Checkout commit from Test and Build run
+      - name: Checkout repository
         uses: actions/checkout@v6
         with:
-          # Checkout the exact commit that the Test and Build workflow ran on
-          ref: ${{ github.event.workflow_run.head_commit.id }}
           fetch-depth: 0
+          persist-credentials: false
 
-      - name: Determine tag that points at the commit
-        id: get_tag
-        run: |
-          set -euo pipefail
-          HEAD_SHA="${{ github.event.workflow_run.head_commit.id }}"
-          echo "Looking for tags that point at commit $HEAD_SHA"
-          # Ensure tags are available locally
-          git fetch --tags --force
-          # Find the first semantic version tag (vX.Y.Z) that points at the commit
-          TAG=$(git tag --points-at "$HEAD_SHA" -l "v[0-9]*.[0-9]*.[0-9]*" | head -n1 || true)
-          if [ -z "$TAG" ]; then
-            echo "No semantic tag (vX.Y.Z) points at commit $HEAD_SHA. Skipping release."
-            # Export empty outputs (so subsequent steps can check)
-            echo "TAG=" >> $GITHUB_OUTPUT
-            echo "VERSION=" >> $GITHUB_OUTPUT
-            exit 0
-          fi
-          echo "Found tag: $TAG"
-          echo "TAG=$TAG" >> $GITHUB_OUTPUT
-          # Strip leading `v` for VERSION
-          echo "VERSION=${TAG#v}" >> $GITHUB_OUTPUT
-
-      - name: Install pnpm (needed if we need to build/publish)
-        if: ${{ steps.get_tag.outputs.TAG != '' }}
+      - name: Install pnpm
         uses: pnpm/action-setup@v6
         with:
           version: 10
 
       - name: Set up Node.js
-        if: ${{ steps.get_tag.outputs.TAG != '' }}
         uses: actions/setup-node@v6
         with:
           node-version: "24"
           cache: "pnpm"
 
-      - name: Download build artifacts from Test and Build
-        if: ${{ steps.get_tag.outputs.TAG != '' }}
-        uses: actions/download-artifact@v8
-        with:
-          name: build-artifacts
-          path: dist
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
 
-      - name: Verify build output
-        if: ${{ steps.get_tag.outputs.TAG != '' }}
-        run: |
-          if [ ! -d "dist" ]; then
-            echo "Build failed: dist directory not found in downloaded artifacts"
-            exit 1
-          fi
-          if [ ! -f "dist/api.js" ] || [ ! -f "dist/app.js" ]; then
-            echo "Build failed: required files not found in dist"
-            exit 1
-          fi
-          echo "Build artifacts verified"
+      - name: Run tests
+        run: pnpm test
 
-      - name: Get version from tag
-        if: ${{ steps.get_tag.outputs.TAG != '' }}
-        id: get_version
-        run: |
-          echo "VERSION=${{ steps.get_tag.outputs.VERSION }}" >> $GITHUB_OUTPUT
+      - name: Build extension
+        run: pnpm run build
 
-      - name: Prepare Release Notes
-        if: ${{ steps.get_tag.outputs.TAG != '' }}
-        id: prepare-notes
-        run: |
-          set -euo pipefail
-          TAG="${{ steps.get_tag.outputs.TAG }}"
-          # Previous semver tag (excluding current)
-          PREV_TAG=$(git tag --sort=-v:refname -l "v[0-9]*.[0-9]*.[0-9]*" | grep -v "^${TAG}$" | head -n1 || true)
-          echo "Preparing release notes from ${PREV_TAG:-<root>} to $TAG"
-
-          ./scripts/generate-release-notes.sh "$PREV_TAG" "$TAG" "Release $TAG" > release_body.md
-
-          echo "Generated Release Body:"
-          cat release_body.md
-
-          {
-            echo "body<<EOF"
-            cat release_body.md
-            echo "EOF"
-          } >> "$GITHUB_OUTPUT"
-
-      - name: Create GitHub Release
-        if: ${{ steps.get_tag.outputs.TAG != '' }}
-        uses: softprops/action-gh-release@v2
-        with:
-          name: Release ${{ steps.get_tag.outputs.TAG }}
-          tag_name: ${{ steps.get_tag.outputs.TAG }}
-          body: ${{ steps.prepare-notes.outputs.body }}
-          files: dist/**
+      - name: Release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-      - name: Publish to npm
-        if: ${{ steps.get_tag.outputs.TAG != '' }}
-        run: |
-          # Ensure npm auth is present (NPM_TOKEN should be configured in repository secrets)
-          if [ -z "${NPM_TOKEN:-}" ]; then
-            echo "NPM_TOKEN secret not set; skipping npm publish"
-            exit 1
-          fi
-          echo "//registry.npmjs.org/:_authToken=${NPM_TOKEN}" > ~/.npmrc
-          npm publish
-        env:
           NPM_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: pnpm exec semantic-release
