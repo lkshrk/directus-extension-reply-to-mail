@@ -100,19 +100,30 @@ jobs:
       - name: Pre-release build verification
         run: pnpm run build
 
-      - name: Create minor version release
+      - name: Create patch version release
         id: create-release-info
         run: |
           set -euo pipefail
           # Get current version
           CURRENT_VERSION=$(node -p "require('./package.json').version")
 
-          # Bump to next minor version
+          # Bump to next patch version
           IFS='.' read -ra PARTS <<< "$CURRENT_VERSION"
-          NEXT_VERSION="${PARTS[0]}.$((PARTS[1] + 1)).0"
+          NEXT_VERSION="${PARTS[0]}.${PARTS[1]}.$((PARTS[2] + 1))"
           NEXT_VERSION_TAG="v$NEXT_VERSION"
 
           echo "Creating release: $CURRENT_VERSION → $NEXT_VERSION"
+
+          # Fail fast if the tag already exists locally or on remote
+          git fetch --tags --quiet
+          if git rev-parse -q --verify "refs/tags/$NEXT_VERSION_TAG" >/dev/null; then
+            echo "::error::Tag $NEXT_VERSION_TAG already exists locally. Refusing to overwrite."
+            exit 1
+          fi
+          if git ls-remote --exit-code --tags origin "refs/tags/$NEXT_VERSION_TAG" >/dev/null 2>&1; then
+            echo "::error::Tag $NEXT_VERSION_TAG already exists on origin. Refusing to overwrite."
+            exit 1
+          fi
 
           # Output NEXT_VERSION_TAG
           echo "next_version_tag=$NEXT_VERSION_TAG" >> $GITHUB_OUTPUT
@@ -120,13 +131,15 @@ jobs:
           # Update version
           npm version $NEXT_VERSION --no-git-tag-version
 
-          # Create tag
+          # Commit and tag
           git config user.name "github-actions"
           git config user.email "github-actions@github.com"
           git add package.json
           git commit -m "chore: bump version to $NEXT_VERSION_TAG"
           git tag "$NEXT_VERSION_TAG"
-          git push origin "$NEXT_VERSION_TAG"
+
+          # Push commit and tag atomically so they never diverge
+          git push --atomic origin "HEAD:${GITHUB_REF_NAME}" "$NEXT_VERSION_TAG"
 
       - name: Prepare Release Notes
         id: prepare-notes
@@ -136,49 +149,51 @@ jobs:
           LAST_TAG="${{ needs.check-for-new-commits.outputs.last_tag }}"
           NEXT_VERSION_TAG="${{ steps.create-release-info.outputs.next_version_tag }}"
 
-          echo "Preparing release notes from $LAST_TAG to $NEXT_VERSION_TAG"
+          echo "Preparing release notes from ${LAST_TAG:-<root>} to $NEXT_VERSION_TAG"
 
-          DEPENDENCY_UPDATES=""
-          OTHER_COMMITS=""
-
-          # Get all commits between last tag and current HEAD (which is the new tag)
-          # Using git log --pretty=format:"- %s" to get commit messages
-          COMMITS_RANGE="$LAST_TAG"..HEAD
-
-          # If LAST_TAG is empty (first release), get all commits up to HEAD
+          # Range excludes the bump commit (HEAD^) so release notes
+          # don't include their own "chore: bump version" entry.
           if [ -z "$LAST_TAG" ]; then
-            COMMITS_RANGE="HEAD" # Get all commits up to HEAD (if no previous tag)
+            COMMITS_RANGE="HEAD^"
+          else
+            COMMITS_RANGE="$LAST_TAG..HEAD^"
           fi
 
-          ALL_COMMITS=$(git log --pretty=format:"- %s" "$COMMITS_RANGE")
+          dep_lines=()
+          other_lines=()
 
-          # Loop through commits and categorize
           while IFS= read -r line; do
-            if [[ "$line" =~ ^-\ (chore\(deps\)|fix\(deps\)|feat\(deps\)|build\(deps\)|ci\(deps\)|refactor\(deps\)):.* || "$line" =~ ^-\ Renovate.* ]]; then
-              DEPENDENCY_UPDATES+="$line"$'
+            [ -z "$line" ] && continue
+            if [[ "$line" =~ ^-\ (chore|fix|feat|build|ci|refactor)\(deps\): ]] \
+               || [[ "$line" =~ ^-\ Renovate ]]; then
+              dep_lines+=("$line")
             else
-              OTHER_COMMITS+="$line"$'
+              other_lines+=("$line")
             fi
-          done <<< "$ALL_COMMITS"
+          done < <(git log --pretty=format:"- %s" "$COMMITS_RANGE")
 
-          RELEASE_BODY="## Automated Weekly Release"
-
-          if [ -n "$DEPENDENCY_UPDATES" ]; then
-            RELEASE_BODY+=$'\n\n'"### Dependency Updates"$'
-            RELEASE_BODY+="$DEPENDENCY_UPDATES"
-          fi
-
-          if [ -n "$OTHER_COMMITS" ]; then
-            RELEASE_BODY+=$'\n\n'"### Other Changes"$'
-            RELEASE_BODY+="$OTHER_COMMITS"
-          fi
+          {
+            echo "## Automated Weekly Release"
+            if [ ${#dep_lines[@]} -gt 0 ]; then
+              echo
+              echo "### Dependency Updates"
+              printf '%s\n' "${dep_lines[@]}"
+            fi
+            if [ ${#other_lines[@]} -gt 0 ]; then
+              echo
+              echo "### Other Changes"
+              printf '%s\n' "${other_lines[@]}"
+            fi
+          } > release_body.md
 
           echo "Generated Release Body:"
-          echo "$RELEASE_BODY"
-          # Set the output for the release body
-          echo "body<<EOF" >> $GITHUB_OUTPUT
-          echo "$RELEASE_BODY" >> $GITHUB_OUTPUT
-          echo "EOF" >> $GITHUB_OUTPUT
+          cat release_body.md
+
+          {
+            echo "body<<EOF"
+            cat release_body.md
+            echo "EOF"
+          } >> "$GITHUB_OUTPUT"
 
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v2
