@@ -4,10 +4,15 @@
     [
       "@semantic-release/commit-analyzer",
       {
+        "parserOpts": {
+          "headerPattern": "^(?:(\\w+)(?:\\(([^)]*)\\))?!?:\\s+)?(.+)$",
+          "headerCorrespondence": ["type", "scope", "subject"]
+        },
         "releaseRules": [
           { "breaking": true, "release": "major" },
           { "type": "feat", "release": "minor" },
-          { "type": "*", "release": "patch" }
+          { "type": "*", "release": "patch" },
+          { "subject": "*", "release": "patch" }
         ]
       }
     ],
