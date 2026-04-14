@@ -153,38 +153,7 @@ jobs:
 
           # Range excludes the bump commit (HEAD^) so release notes
           # don't include their own "chore: bump version" entry.
-          if [ -z "$LAST_TAG" ]; then
-            COMMITS_RANGE="HEAD^"
-          else
-            COMMITS_RANGE="$LAST_TAG..HEAD^"
-          fi
-
-          dep_lines=()
-          other_lines=()
-
-          while IFS= read -r line; do
-            [ -z "$line" ] && continue
-            if [[ "$line" =~ ^-\ (chore|fix|feat|build|ci|refactor)\(deps\): ]] \
-               || [[ "$line" =~ ^-\ Renovate ]]; then
-              dep_lines+=("$line")
-            else
-              other_lines+=("$line")
-            fi
-          done < <(git log --pretty=format:"- %s" "$COMMITS_RANGE")
-
-          {
-            echo "## Automated Weekly Release"
-            if [ ${#dep_lines[@]} -gt 0 ]; then
-              echo
-              echo "### Dependency Updates"
-              printf '%s\n' "${dep_lines[@]}"
-            fi
-            if [ ${#other_lines[@]} -gt 0 ]; then
-              echo
-              echo "### Other Changes"
-              printf '%s\n' "${other_lines[@]}"
-            fi
-          } > release_body.md
+          ./scripts/generate-release-notes.sh "$LAST_TAG" "HEAD^" "Automated Weekly Release" > release_body.md
 
           echo "Generated Release Body:"
           cat release_body.md

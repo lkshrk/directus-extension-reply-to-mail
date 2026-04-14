@@ -10,37 +10,6 @@ Custom operation to send emails with reply-to field set. It uses the Directus No
 npm install directus-extension-reply-to-mail
 ```
 
-## Development & Release
-
-### Creating a Release
-
-To create a new release:
-
-1. Make your changes and commit them
-2. Run the release script:
-
-```sh
-./scripts/release.sh patch   # for patch version (x.y.Z)
-./scripts/release.sh minor   # for minor version (x.Y.0)
-./scripts/release.sh major   # for major version (X.0.0)
-```
-
-This will:
-- Update the version in package.json
-- Create a git tag (v1.0.0 format)
-- Push the changes and tags to GitHub
-- Trigger the GitHub Actions workflow to build and publish
-
-### GitHub Actions Workflow
-
-The repository includes a GitHub Actions workflow (`.github/workflows/release.yml`) that:
-- Triggers on push of tags matching `v*.*.*` pattern
-- Builds the extension
-- Creates a GitHub release with the built artifacts
-- Publishes to npm using **trusted publishing** (no NPM_TOKEN required)
-
-The workflow will automatically publish to npm when you push a version tag (e.g., `v1.0.0`).
-
 ## Testing & CI/CD
 
 The extension includes comprehensive automated tests using Jest and a GitHub Actions workflow that runs on every push and pull request.
@@ -49,13 +18,13 @@ The extension includes comprehensive automated tests using Jest and a GitHub Act
 
 ```bash
 # Run all tests
-npm test
+pnpm test
 
 # Run tests with coverage
-npm run test:coverage
+pnpm run test:coverage
 
 # Run tests in watch mode
-npm run test:watch
+pnpm run test:watch
 ```
 
 ### Local Validation
@@ -67,10 +36,8 @@ You can run the same validation locally:
 ./scripts/validate.sh
 
 # Run the full CI pipeline locally
-npm ci && ./scripts/validate.sh && npm test && npm run build
+pnpm install --frozen-lockfile && ./scripts/validate.sh && pnpm test && pnpm run build
 ```
-
-=======
 
 ## Credits
 

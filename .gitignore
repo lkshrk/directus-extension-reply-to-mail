@@ -1,8 +1,43 @@
-.DS_Store
-*.log*
+# Build / deps
 build
 dist
 node_modules
 out
-.vscode
 coverage
+*.log*
+
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+$RECYCLE.BIN/
+
+# Editors / IDEs
+.vscode
+.idea
+*.swp
+*.swo
+*~
+.project
+.classpath
+.settings/
+*.sublime-project
+*.sublime-workspace
+.history/
+.zed/
+
+# AI tooling
+.claude/
+.cursor/
+.aider*
+.cline/
+.continue/
+.github-copilot/
+.codeium/
+.windsurf/
+CLAUDE.local.md
+.serena/
+.specstory/
