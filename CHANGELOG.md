@@ -1,3 +1,11 @@
+## [1.2.3](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.2...v1.2.3) (2026-04-27)
+
+
+### Bug Fixes
+
+* fix wrong owner name ([f1e5b88](https://github.com/lkshrk/directus-extension-reply-to-mail/commit/f1e5b88b69bf9304d8d6779b088a48964f5e3032))
+* include directus/extensions in bundle ([6a22529](https://github.com/lkshrk/directus-extension-reply-to-mail/commit/6a225291437346fc3701d6473884b4d8ce79bfe5))
+
 ## [1.2.2](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.1...v1.2.2) (2026-04-20)
 
 
