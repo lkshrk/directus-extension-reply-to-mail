@@ -1,3 +1,5 @@
+## [1.2.5](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.4...v1.2.5) (2026-05-11)
+
 ## [1.2.4](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.3...v1.2.4) (2026-05-04)
 
 
