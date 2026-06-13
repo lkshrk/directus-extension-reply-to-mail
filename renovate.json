@@ -1,24 +1,4 @@
 {
-  "extends": [
-    "config:recommended"
-  ],
-  "enabled": true,
-  "schedule": [
-    "every weekend"
-  ],
-  "automerge": true,
-  "automergeType": "pr",
-  "rebaseWhen": "auto",
-  "packageRules": [
-    {
-      "matchUpdateTypes": [
-        "patch",
-        "minor",
-        "major"
-      ],
-      "automerge": true
-    }
-  ],
-  "prConcurrentLimit": 2,
-  "prHourlyLimit": 20
+  "$schema": "https://docs.renovatebot.com/renovate-schema.json",
+  "extends": ["github>lkshrk/woodpecker-ops//renovate/presets/app-library.json5"]
 }
