@@ -1,3 +1,10 @@
+## [1.2.10](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.9...v1.2.10) (2026-06-15)
+
+
+### Bug Fixes
+
+* **deps:** update dependency sanitize-html to v2.17.5 ([#75](https://github.com/lkshrk/directus-extension-reply-to-mail/issues/75)) ([73dae92](https://github.com/lkshrk/directus-extension-reply-to-mail/commit/73dae920e4883775aa620dccbe26f3ed3a0ebb2f))
+
 ## [1.2.9](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.8...v1.2.9) (2026-06-08)
 
 
