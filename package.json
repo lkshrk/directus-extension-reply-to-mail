@@ -56,7 +56,7 @@
     "sanitize-html": "2.17.5"
   },
   "devDependencies": {
-    "@directus/extensions": "4.0.0",
+    "@directus/extensions": "4.0.2",
     "@directus/extensions-sdk": "18.0.0",
     "@semantic-release/changelog": "^6.0.3",
     "@semantic-release/git": "^10.0.1",
