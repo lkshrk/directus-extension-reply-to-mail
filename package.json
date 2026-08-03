@@ -53,7 +53,7 @@
   },
   "dependencies": {
     "marked": "18.0.7",
-    "sanitize-html": "2.17.5"
+    "sanitize-html": "2.17.6"
   },
   "devDependencies": {
     "@directus/extensions": "4.0.2",
