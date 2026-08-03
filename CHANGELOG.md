@@ -1,3 +1,10 @@
+## [1.2.11](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.10...v1.2.11) (2026-08-03)
+
+
+### Bug Fixes
+
+* **deps:** update dependency marked to v18.0.7 ([#87](https://github.com/lkshrk/directus-extension-reply-to-mail/issues/87)) ([25ed89a](https://github.com/lkshrk/directus-extension-reply-to-mail/commit/25ed89a38830925fcf8c14b032f102e1b643dd3a))
+
 ## [1.2.10](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.9...v1.2.10) (2026-06-15)
 
 
