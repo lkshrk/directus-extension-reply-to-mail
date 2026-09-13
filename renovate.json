@@ -17,6 +17,13 @@
         "major"
       ],
       "automerge": true
+    },
+    {
+      "description": "Follow the TypeScript version pinned by directus/directus upstream",
+      "matchPackageNames": [
+        "typescript"
+      ],
+      "allowedVersions": "<6"
     }
   ],
   "prConcurrentLimit": 2,
