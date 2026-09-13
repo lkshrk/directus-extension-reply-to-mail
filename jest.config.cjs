@@ -12,6 +12,6 @@ module.exports = {
   transform: {
     "^.+\\.(t|m?j)sx?$": ["ts-jest", { useESM: true }],
   },
-  transformIgnorePatterns: ["/node_modules/(?!(?:\\.pnpm/)?(?:marked|sanitize-html))"],
+  transformIgnorePatterns: ["/node_modules/(?!(?:\\.pnpm/)?(?:marked|sanitize-html|htmlparser2|domelementtype|domhandler|domutils|dom-serializer|entities))"],
   extensionsToTreatAsEsm: [".ts"],
 };
