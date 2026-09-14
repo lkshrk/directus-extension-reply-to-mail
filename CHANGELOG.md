@@ -1,3 +1,11 @@
+## [1.2.13](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.12...v1.2.13) (2026-09-14)
+
+
+### Bug Fixes
+
+* **deps:** update dependency sanitize-html to v2.17.7 ([#88](https://github.com/lkshrk/directus-extension-reply-to-mail/issues/88)) ([7b76bf0](https://github.com/lkshrk/directus-extension-reply-to-mail/commit/7b76bf080b825d457ae59eaf443990ce698948bd))
+* **test:** transform ESM-only htmlparser2 deps in Jest ([#92](https://github.com/lkshrk/directus-extension-reply-to-mail/issues/92)) ([d37d662](https://github.com/lkshrk/directus-extension-reply-to-mail/commit/d37d6628709a08324b95dc7cb9cf9b9ad0a8230d))
+
 ## [1.2.12](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.11...v1.2.12) (2026-09-07)
 
 ## [1.2.11](https://github.com/lkshrk/directus-extension-reply-to-mail/compare/v1.2.10...v1.2.11) (2026-08-03)
