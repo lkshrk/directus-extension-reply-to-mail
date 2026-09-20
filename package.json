@@ -58,8 +58,8 @@
   "devDependencies": {
     "@directus/extensions": "4.0.4",
     "@directus/extensions-sdk": "18.0.4",
-    "@semantic-release/changelog": "^6.0.3",
-    "@semantic-release/git": "^10.0.1",
+    "@semantic-release/changelog": "^7.0.0",
+    "@semantic-release/git": "^11.0.0",
     "@types/jest": "^30.0.0",
     "@types/nodemailer": "8.0.2",
     "jest": "^30.0.0",
