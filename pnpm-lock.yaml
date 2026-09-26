@@ -16,8 +16,8 @@ importers:
         version: 2.17.7
     devDependencies:
       '@directus/extensions':
-        specifier: 4.0.4
-        version: 4.0.4(knex@3.1.0(supports-color@8.1.1))(supports-color@8.1.1)(vue@3.5.43(typescript@5.9.3))
+        specifier: 4.0.5
+        version: 4.0.5(knex@3.1.0(supports-color@8.1.1))(supports-color@8.1.1)(vue@3.5.43(typescript@5.9.3))
       '@directus/extensions-sdk':
         specifier: 18.0.4
         version: 18.0.4(@types/node@25.6.2)(@unhead/vue@1.11.20(vue@3.5.43(typescript@5.9.3)))(debug@4.4.3(supports-color@8.1.1))(knex@3.1.0(supports-color@8.1.1))(pinia@2.3.1(typescript@5.9.3)(vue@3.5.43(typescript@5.9.3)))(supports-color@8.1.1)(terser@5.44.1)(typescript@5.9.3)
@@ -273,11 +273,31 @@ packages:
       vue-router:
         optional: true
 
+  '@directus/extensions@4.0.5':
+    resolution: {integrity: sha512-AKT+BkxYRslO1ioLmTeyLBKJF/PpqhDsXmgSxy+AZdO6UofQV/av1iaZ/NT+xLMAShA/3LbXTRoRHxCiFUjP3w==}
+    peerDependencies:
+      knex: 3.1.0
+      pino: 9.7.0
+      vue: 3.5.24
+      vue-router: 4.6.3
+    peerDependenciesMeta:
+      knex:
+        optional: true
+      pino:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+
   '@directus/schema@14.0.2':
     resolution: {integrity: sha512-qHAtkAejvcPQCWaRpU9HqJs7Jm4gtxPujT2eB4L+RnTy8ESGjR0C4WvPbUWiXLjaWJbaWB0avFE0Dptzvz7Uzw==}
 
   '@directus/system-data@4.6.1':
     resolution: {integrity: sha512-0jWbG50Gdp/VDptK7EakpO19iuL371RAtls3I284VcY3E0fXuIT1js3JqfFUAqR66CbTYbSJMX3bP/MRwe35hA==}
+
+  '@directus/system-data@4.7.0':
+    resolution: {integrity: sha512-4XxH3jLYbHHFyLINCgIduR6qjLp9LM4ggPu6UUxtjZMAI1WAmA12yuK1iWm/6Jcpdk4Nne0xjuLB8gV++KhxaQ==}
 
   '@directus/themes@2.0.4':
     resolution: {integrity: sha512-tUOwouvs22PBBht79pR4HM2Jlfy7Z3pa1cDpmYgp5r2IGVfIER1YYsiT0lIShRO0KrCgXY1naRiS3Wt3hb4k3w==}
@@ -324,8 +344,54 @@ packages:
       ws:
         optional: true
 
+  '@directus/types@17.0.0':
+    resolution: {integrity: sha512-8XtiDzwt5fmUswxC1jFLZS8A6bTOnD2pAJsVK43NLFtnl3fwaXBxW6UxP5S+CX0UwpwIzotgdtZdSj0FC/HypQ==}
+    peerDependencies:
+      deep-diff: 1.0.2
+      express: 4.22.3
+      graphql: 16.12.0
+      knex: 3.1.0
+      nodemailer: 10.0.1
+      openapi3-ts: 4.5.0
+      pino: 9.7.0
+      sharp: 0.35.4
+      vue: 3.5.24
+      vue-router: 4.6.3
+      ws: 8.21.0
+    peerDependenciesMeta:
+      deep-diff:
+        optional: true
+      express:
+        optional: true
+      graphql:
+        optional: true
+      knex:
+        optional: true
+      nodemailer:
+        optional: true
+      openapi3-ts:
+        optional: true
+      pino:
+        optional: true
+      sharp:
+        optional: true
+      vue:
+        optional: true
+      vue-router:
+        optional: true
+      ws:
+        optional: true
+
   '@directus/utils@13.5.4':
     resolution: {integrity: sha512-LYsiIOkqMBtZJiw8HwuO1HLDZN0WSVH71XuJ+fgI3sbZcYkniQjR76WBnuf2Ab7ZwjVK9Gh199FhegstwLjGAQ==}
+    peerDependencies:
+      vue: 3.5.24
+    peerDependenciesMeta:
+      vue:
+        optional: true
+
+  '@directus/utils@13.5.5':
+    resolution: {integrity: sha512-CcvVdGoCBQTszoMqxQOJktdpI71Yu8jiY8922ZBsepw2QrB5db/AfxJScIoLctkikgD/w7TlS/KsxMHQDcxmBA==}
     peerDependencies:
       vue: 3.5.24
     peerDependenciesMeta:
@@ -2892,6 +2958,10 @@ packages:
     resolution: {integrity: sha512-N5A3KTWQpPWT4ExxxPlUx7WmykGXRzhNidWhV41d6Abu9YfI2NyWCJuxdPnslJCPWtbRpSVOWSnSS6GakLM/Rg==}
     engines: {node: '>= 20'}
 
+  joi@18.2.9:
+    resolution: {integrity: sha512-2mD929bUVKUhOLQQEVhlf6EZ0Mlo0DeRb5MO7cViR9AXLtBauuccEtB1py9Ocxpo/P7ucnh442iY/iOwrh3IQw==}
+    engines: {node: '>= 20'}
+
   js-tokens@4.0.0:
     resolution: {integrity: sha512-RdJUflcE3cUzKiMqQgsCu06FPu9UdIJO0beYbPhHN4k6apgJtifcoCtT9bcxOpYBtpD2kCM6Sbzg4CausW/PKQ==}
 
@@ -2901,6 +2971,10 @@ packages:
 
   js-yaml@4.3.1:
     resolution: {integrity: sha512-CY6crGq313MX8GkwvB7tzgp99vjQxY1++5y10/BKN/GUfHqWaOGQMNZkBvqSzsZKWk/ijwHlWzzkLulsGHhjWQ==}
+    hasBin: true
+
+  js-yaml@4.3.2:
+    resolution: {integrity: sha512-SFNOvSJ+Dgf/9An904Yx+CgSlIPCkIpao4qo51lpee25TIRejdH3rhR4EZMGoNx3/TP3O+wzWuiTFl4sqbltzA==}
     hasBin: true
 
   jsesc@3.1.0:
@@ -4792,11 +4866,11 @@ snapshots:
       - tedious
       - ws
 
-  '@directus/extensions@4.0.4(knex@3.1.0(supports-color@8.1.1))(supports-color@8.1.1)(vue@3.5.43(typescript@5.9.3))':
+  '@directus/extensions@4.0.5(knex@3.1.0(supports-color@8.1.1))(supports-color@8.1.1)(vue@3.5.43(typescript@5.9.3))':
     dependencies:
       '@directus/constants': 14.4.1
-      '@directus/types': 16.2.0(knex@3.1.0(supports-color@8.1.1))(supports-color@8.1.1)(vue@3.5.43(typescript@5.9.3))
-      '@directus/utils': 13.5.4(vue@3.5.43(typescript@5.9.3))
+      '@directus/types': 17.0.0(knex@3.1.0(supports-color@8.1.1))(supports-color@8.1.1)(vue@3.5.43(typescript@5.9.3))
+      '@directus/utils': 13.5.5(vue@3.5.43(typescript@5.9.3))
       fs-extra: 11.3.2
       lodash-es: 4.18.1
       zod: 4.1.12
@@ -4835,6 +4909,8 @@ snapshots:
 
   '@directus/system-data@4.6.1': {}
 
+  '@directus/system-data@4.7.0': {}
+
   '@directus/themes@2.0.4(@unhead/vue@1.11.20(vue@3.5.43(typescript@5.9.3)))(pinia@2.3.1(typescript@5.9.3)(vue@3.5.43(typescript@5.9.3)))(vue@3.5.24(typescript@5.9.3))':
     dependencies:
       '@directus/utils': 13.5.4(vue@3.5.24(typescript@5.9.3))
@@ -4870,7 +4946,7 @@ snapshots:
       - supports-color
       - tedious
 
-  '@directus/types@16.2.0(knex@3.1.0(supports-color@8.1.1))(supports-color@8.1.1)(vue@3.5.43(typescript@5.9.3))':
+  '@directus/types@17.0.0(knex@3.1.0(supports-color@8.1.1))(supports-color@8.1.1)(vue@3.5.43(typescript@5.9.3))':
     dependencies:
       '@directus/ai': 1.3.2
       '@directus/constants': 14.4.1
@@ -4908,15 +4984,15 @@ snapshots:
     optionalDependencies:
       vue: 3.5.24(typescript@5.9.3)
 
-  '@directus/utils@13.5.4(vue@3.5.43(typescript@5.9.3))':
+  '@directus/utils@13.5.5(vue@3.5.43(typescript@5.9.3))':
     dependencies:
       '@directus/constants': 14.4.1
-      '@directus/system-data': 4.6.1
+      '@directus/system-data': 4.7.0
       date-fns: 4.1.0
       fs-extra: 11.3.2
       ipaddr.js: 2.4.0
-      joi: 18.2.3
-      js-yaml: 4.3.1
+      joi: 18.2.9
+      js-yaml: 4.3.2
       lodash-es: 4.18.1
       micromustache: 8.0.3
     optionalDependencies:
@@ -7791,6 +7867,16 @@ snapshots:
       '@hapi/topo': 6.0.2
       '@standard-schema/spec': 1.1.0
 
+  joi@18.2.9:
+    dependencies:
+      '@hapi/address': 5.1.1
+      '@hapi/formula': 3.0.2
+      '@hapi/hoek': 11.0.7
+      '@hapi/pinpoint': 2.0.1
+      '@hapi/tlds': 1.1.4
+      '@hapi/topo': 6.0.2
+      '@standard-schema/spec': 1.1.0
+
   js-tokens@4.0.0: {}
 
   js-yaml@3.14.2:
@@ -7799,6 +7885,10 @@ snapshots:
       esprima: 4.0.1
 
   js-yaml@4.3.1:
+    dependencies:
+      argparse: 2.0.1
+
+  js-yaml@4.3.2:
     dependencies:
       argparse: 2.0.1
 
