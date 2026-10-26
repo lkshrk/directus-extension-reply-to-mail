@@ -1,6 +1,7 @@
 {
   "extends": [
-    "config:recommended"
+    "config:recommended",
+    "github>lkshrk/gh-ops//renovate/presets/github-actions.json5"
   ],
   "enabled": true,
   "schedule": [
