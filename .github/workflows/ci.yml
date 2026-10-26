@@ -1,10 +1,18 @@
-name: Test and Build
+name: CI Pipeline
 
 on:
   push:
-    branches: ["**"] # Run on all branches (tag pushes are handled via atomic branch+tag push)
+    branches: [main]
   pull_request:
-    branches: ["**"] # Run on all pull requests
+    branches: ["**"]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: ${{ github.ref != 'refs/heads/main' }}
 
 jobs:
   validate-and-test:
