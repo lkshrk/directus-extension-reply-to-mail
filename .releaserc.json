@@ -10,9 +10,7 @@
         },
         "releaseRules": [
           { "breaking": true, "release": "major" },
-          { "type": "feat", "release": "minor" },
-          { "type": "*", "release": "patch" },
-          { "subject": "*", "release": "patch" }
+          { "type": "feat", "release": "minor" }
         ]
       }
     ],
