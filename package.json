@@ -57,7 +57,7 @@
   },
   "devDependencies": {
     "@directus/extensions": "4.1.0",
-    "@directus/extensions-sdk": "18.0.6",
+    "@directus/extensions-sdk": "18.1.0",
     "@types/jest": "^30.0.0",
     "@types/nodemailer": "8.0.2",
     "jest": "^30.0.0",
